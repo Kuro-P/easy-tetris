@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>tetris</title>
+    <style type="text/css">
+        #canvas{
+            border: 1px solid #ccc;
+            box-shadow:0 0 5px rgba(0,0,0,.5);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        var cvs = document.getElementById('canvas');
+        var ctx = cvs.getContext('2d');
+        var Iblock = [[0,0,0,0],[1,1,1,1]];
+            Lblock = [[1,0,0,0],[1,1,1,0]],
+            Tblock = [[0,1,0,0],[1,1,1,0]],
+            Zblock = [[1,1,0,0],[0,1,1,0]],
+            Sblock = [[0,1,1,0],[1,1,0,0]]
+            Oblock = [[1,1,0,0],[1,1,0,0]];
+
+
+        ctx.width = 800; // 32
+        ctx.height = 600; //24
+
+        var blockW = 25;
+        ctx.beginPath();
+        drawBock(Oblock);
+        ctx.closePath();
+
+        function drawBock(typeOfBlock){
+            for(var i=0; i<typeOfBlock.length; i++){
+                for(var j=0;j<typeOfBlock[i].length; j++){
+                    if(typeOfBlock[i][j] == 0) continue;
+                    ctx.moveTo(blockW, blockW);
+                    ctx.fillStyle = "#ccc";
+                    ctx.fillRect(j*blockW, i*blockW, blockW, blockW);
+                    ctx.strokeStyle = "#aaa"; //进行描边
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(j*blockW, i*blockW, blockW, blockW);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
