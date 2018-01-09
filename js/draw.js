@@ -12,24 +12,32 @@ var Iblock = [[0, 0, 0, 0], [1, 1, 1, 1]],
 //class block { TypeArr: arr, x: 0, y: -2*blockW, vy: 10px/200ms }
 
 var lastTime = Date.now();
+var gridBlocks = [];
 init();
-loop();
+//loop();
+
 
 function init() {
     //ctx.beginPath();
 
-    drawBg();
-    drawGrid();
-    drawBlock(Tb);
+    //初始化背景数组
+    for (var i = 0; i < rows; i++) {
+        gridBlocks.push([]);
+        for (var j = 0; j < cols; j++) {
+            gridBlocks[i].push(new gridBlock());
+        }
+    }
 
+    drawGrid();
+    //drawBlock(Tb);
     //ctx.closePath();
 }
 
 
-function drawBg() {
+/*function drawBg() {
     ctx.fillStyle = "#06c";
     ctx.fillRect(0, 0, cvs.width, cvs.height);
-}
+}*/
 
 function drawBlock(block) {
     var typeArr = block.typeArr;
@@ -51,22 +59,24 @@ function drawBlock(block) {
 }
 
 function drawGrid() {
-    //var cols = cvs.width / blockW,
-    //    rows = cvs.height /blockW;
+
     for (var i = 0; i < rows; i++) {
         for (var j = 0; j < cols; j++) {
             ctx.moveTo(0, 0);
-            ctx.strokeStyle = "#9cf";
+            ctx.fillStyle = "#06c";
+            ctx.fillRect(j * blockW, i * blockW, blockW, blockW); //填充
+            ctx.strokeStyle = gridBlocks[i][j].borderColor;
             ctx.lineWidth = 1;
-            ctx.strokeRect(j * blockW, i * blockW, blockW, blockW);
+            ctx.strokeRect(j * blockW, i * blockW, blockW, blockW); //描边
         }
     }
+
 }
 
 function translateY(block, val) {
     if (!val) console.error('translateY 参数错误');
 
-    block.y = Math.min(block.y + Math.abs(val), cols - 1);
+    block.y = Math.min(block.y + Math.abs(val), cols - block.typeArr.length +1);
 }
 
 function translateX(block, val) {

@@ -5,25 +5,41 @@
  * */
 
 class block{
-    constructor(typeArr, color, borderColor, wblocks){
+    constructor(renderArr, color, borderColor){
         this.x = Math.floor( Math.random() * cvs.width / blockW ); //[0,1,2 ... ,cols]
         this.y = -2;
-        this.typeArr = typeArr;
+        this.renderArr = renderArr;
         this.color = color;
         this.borderColor = borderColor;
-        this.wblocks = wblocks || 3;
+        this.curArr = renderArr[0];
+        //this.wblocks = wblocks || 3;
     }
     init(){
         this.x = Math.min(this.x, cols - this.wblocks );
+        this.curArr = this.renderArr[Math.floor(Math.random() * this.renderArr.length)];
     }
 }
 
-
-class typeBlock extends block{
-    constructor(typeArr, color, borderColor, wblocks){
-        super(typeArr, color, borderColor, wblocks);
-        super.init();
+//renderArr 里有四个数组，每个数组里存放该类型不同角度的渲染数组
+//drop时 或者BLOCK到达底部时 更改gridBlocks中对应列和行的值
+class typeBlocks{
+    constructor(renderArr, color, borderColor){
+        this.color = color;
+        this.borderColor = borderColor;
+        this.typeArr = renderArr;
+        this.x = 0;
+        this.y = -2;
+        //super.init();
     }
 }
-var Tb = new typeBlock([[0,1,0,0],[1,1,1,0]],'green','yellow',3);
+
+class gridBlock{
+    constructor(){
+        this.color = '#06c';
+        this.borderColor = '#9cf';
+        this.value = 0;
+    }
+}
+
+//var Tb = new typeBlock([[1, 1, 1, 1]],'black','pink',4);
 
