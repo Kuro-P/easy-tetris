@@ -1,0 +1,12 @@
+{
+  "name": "Tetris",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-stylus": "^2.3.0",
+    "gulp-watch": "^4.3.5",
+    "nib": "^1.1.0"
+  }
+}

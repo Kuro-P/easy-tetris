@@ -1,49 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1,width=device-width" />
     <title>tetris</title>
-    <style type="text/css">
-        #canvas{
-            border: 1px solid #ccc;
-            box-shadow:0 0 5px rgba(0,0,0,.5);
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="controller">
+            <div class="rotate">旋转</div>
+            <div class="drop" id="drop">drop</div>
+            <div class="direction">
+                <div id="left">左</div>
+                <div id="down">下</div>
+                <div id="right">右</div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript">
         var cvs = document.getElementById('canvas');
         var ctx = cvs.getContext('2d');
-        var Iblock = [[0,0,0,0],[1,1,1,1]];
-            Lblock = [[1,0,0,0],[1,1,1,0]],
-            Tblock = [[0,1,0,0],[1,1,1,0]],
-            Zblock = [[1,1,0,0],[0,1,1,0]],
-            Sblock = [[0,1,1,0],[1,1,0,0]]
-            Oblock = [[1,1,0,0],[1,1,0,0]];
+        cvs.width = 400;
+        cvs.height = 440;
 
+        var blockW = 40;
 
-        ctx.width = 800; // 32
-        ctx.height = 600; //24
-
-        var blockW = 25;
-        ctx.beginPath();
-        drawBock(Oblock);
-        ctx.closePath();
-
-        function drawBock(typeOfBlock){
-            for(var i=0; i<typeOfBlock.length; i++){
-                for(var j=0;j<typeOfBlock[i].length; j++){
-                    if(typeOfBlock[i][j] == 0) continue;
-                    ctx.moveTo(blockW, blockW);
-                    ctx.fillStyle = "#ccc";
-                    ctx.fillRect(j*blockW, i*blockW, blockW, blockW);
-                    ctx.strokeStyle = "#aaa"; //进行描边
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(j*blockW, i*blockW, blockW, blockW);
-                }
-            }
-        }
+        var cols = cvs.width / blockW,
+            rows = cvs.height /blockW;
     </script>
+    <script type="text/javascript" src="js/block.js"></script>
+    <script type="text/javascript" src="js/draw.js"></script>
+    <script type="text/javascript" src="js/events.js"></script>
 </body>
 </html>
