@@ -41,20 +41,11 @@ class TypeBlock extends BaseBlock{
 }
 
 
-class GridBlock{
-    constructor(){
-        this.color = '#06c';
-        this.borderColor = '#9cf';
-        this.value = 0;
-    }
-}
-
-
-class test{
-    constructor(){
-        this.a = 1;
-        this.b = 2;
-        this.c = this.a + this.b;
+class dataBlock{
+    constructor(color, borderColor, value){
+        this.color = color;
+        this.borderColor = borderColor;
+        this.value = value;
     }
 }
 

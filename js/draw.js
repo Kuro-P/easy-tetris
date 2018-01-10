@@ -17,13 +17,13 @@ function init() {
     for (var i = 0; i < rows; i++) {
         gridBlocks.push([]);
         for (var j = 0; j < cols; j++) {
-            gridBlocks[i].push(new GridBlock());
+            gridBlocks[i].push(new dataBlock("#06c", '#9cf', 0));
         }
     }
 
     curBlock = generate();
     drawGrid();
-    console.log(curBlock);
+
     drawBlock(curBlock);
     //ctx.closePath();
 }
@@ -34,6 +34,7 @@ function init() {
     ctx.fillRect(0, 0, cvs.width, cvs.height);
 }*/
 
+//画typeBlock
 function drawBlock(block) {
     var typeArr = block.curArr;
 
@@ -55,10 +56,10 @@ function drawBlock(block) {
 
 function drawGrid() {
 
-    for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < cols; j++) {
-            ctx.moveTo(0, 0);
-            ctx.fillStyle = "#06c";
+    for (var i = 0; i < gridBlocks.length; i++) {
+        for (var j = 0; j < gridBlocks[i].length; j++) {
+           // ctx.moveTo(0, 0);
+            ctx.fillStyle = gridBlocks[i][j].color;
             ctx.fillRect(j * blockW, i * blockW, blockW, blockW);
             ctx.strokeStyle = gridBlocks[i][j].borderColor;
             ctx.lineWidth = 1;
@@ -117,7 +118,16 @@ function generate(){
 
 //触底判断
 function judge(){
-    if(curBlock.y > rows - curBlock.curArr.length){
+    if(curBlock.y > rows - curBlock.curArr.length){ //注意 当此判断条件成立时 访问数组index不可用curBlock.y 会超出索引值
+        var typeArr = curBlock.curArr;
+
+        for(let i=0; i<typeArr.length; i++) {
+            for(let j=0; j<typeArr[i].length; j++){
+                if (typeArr[i][j] == 0) continue;
+                gridBlocks[rows - typeArr.length + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+            }
+        }
+
         curBlock = generate();
     }
 }
