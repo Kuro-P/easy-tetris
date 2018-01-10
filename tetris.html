@@ -10,7 +10,7 @@
     <div class="container">
         <canvas id="canvas"></canvas>
         <div class="controller">
-            <div class="rotate">旋转</div>
+            <div class="rotate" id="rotate">旋转</div>
             <div class="drop" id="drop">drop</div>
             <div class="direction">
                 <div id="left">左</div>
@@ -31,6 +31,7 @@
         var cols = cvs.width / blockW,
             rows = cvs.height /blockW;
     </script>
+    <script type="text/javascript" src="js/renderArr.js"></script>
     <script type="text/javascript" src="js/block.js"></script>
     <script type="text/javascript" src="js/draw.js"></script>
     <script type="text/javascript" src="js/events.js"></script>

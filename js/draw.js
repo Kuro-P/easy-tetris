@@ -2,19 +2,12 @@
  * Created by wanghe on 18/1/9.
  */
 
-var Iblock = [[0, 0, 0, 0], [1, 1, 1, 1]],
-    Lblock = [[1, 0, 0, 0], [1, 1, 1, 0]],
-    Tblock = [[0, 1, 0, 0], [1, 1, 1, 0]],
-    Zblock = [[1, 1, 0, 0], [0, 1, 1, 0]],
-    Sblock = [[0, 1, 1, 0], [1, 1, 0, 0]],
-    Oblock = [[1, 1, 0, 0], [1, 1, 0, 0]];
-
 //class block { TypeArr: arr, x: 0, y: -2*blockW, vy: 10px/200ms }
 
 var lastTime = Date.now();
 var gridBlocks = [];
 init();
-//loop();
+loop();
 
 
 function init() {
@@ -24,12 +17,14 @@ function init() {
     for (var i = 0; i < rows; i++) {
         gridBlocks.push([]);
         for (var j = 0; j < cols; j++) {
-            gridBlocks[i].push(new gridBlock());
+            gridBlocks[i].push(new GridBlock());
         }
     }
 
+    curBlock = generate();
     drawGrid();
-    //drawBlock(Tb);
+    console.log(curBlock);
+    drawBlock(curBlock);
     //ctx.closePath();
 }
 
@@ -40,7 +35,7 @@ function init() {
 }*/
 
 function drawBlock(block) {
-    var typeArr = block.typeArr;
+    var typeArr = block.curArr;
 
     for (var i = 0; i < typeArr.length; i++) {
 
@@ -64,41 +59,65 @@ function drawGrid() {
         for (var j = 0; j < cols; j++) {
             ctx.moveTo(0, 0);
             ctx.fillStyle = "#06c";
-            ctx.fillRect(j * blockW, i * blockW, blockW, blockW); //填充
+            ctx.fillRect(j * blockW, i * blockW, blockW, blockW);
             ctx.strokeStyle = gridBlocks[i][j].borderColor;
             ctx.lineWidth = 1;
-            ctx.strokeRect(j * blockW, i * blockW, blockW, blockW); //描边
+            ctx.strokeRect(j * blockW, i * blockW, blockW, blockW);
         }
     }
 
 }
 
 function translateY(block, val) {
-    if (!val) console.error('translateY 参数错误');
-
-    block.y = Math.min(block.y + Math.abs(val), cols - block.typeArr.length +1);
+    if (!block || !val) console.error('translateY 参数错误');
+    //if (block.y >= rows - block.curArr.length) return;
+    //block.y = Math.min(block.y + Math.abs(val), rows - block.curArr.length);
+    block.y = block.y + parseInt(val);
 }
 
 function translateX(block, val) {
-    if (!val) console.error('translateX 参数错误');
+    if (!block || !val) console.error('translateX 参数错误');
 
-    var val = parseInt(val);
-    block.x = Math.min(Math.max(block.x + val, 0), cols - block.wblocks);
+    block.x = Math.min(Math.max(block.x + parseInt(val), 0), cols - block.wblocks);
+}
+
+//顺时针旋转
+function rotate(block) {
+    if (!block) console.error('rotate 参数错误');
+
+    (block.status == 3)?(block.status = 0):(++block.status);
+    block.curArr = block.renderArr[block.status];
+    block.wblocks = block.curArr[0].length;
 }
 
 function loop() {
     window.requestAnimationFrame(function () {
         var curTime = Date.now();
-        drawBg();
         drawGrid();
 
         if (curTime - lastTime >= 600) {
-            translateY(Tb, 1);
+            translateY(curBlock, 1);
+            judge();
             lastTime = curTime;
         }
 
-        drawBlock(Tb);
+        drawBlock(curBlock);
 
         loop();
     })
+}
+
+function generate(){
+    var keys = Object.keys(typeConfig);
+    var idx = Math.floor(Math.random() * keys.length);
+    var { renderArr, color, borderColor } = typeConfig[keys[idx]]; //获取到随机生成的block的型号参数配置
+    return new TypeBlock(renderArr, color, borderColor); //返回新随机生成的block对象
+
+}
+
+//触底判断
+function judge(){
+    if(curBlock.y > rows - curBlock.curArr.length){
+        curBlock = generate();
+    }
 }
