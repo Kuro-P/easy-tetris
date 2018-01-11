@@ -14,10 +14,14 @@ function init() {
     //ctx.beginPath();
 
     //初始化背景数组
-    for (var i = 0; i < rows; i++) {
+    for (var i = 0; i < rows + 1; i++) {
         gridBlocks.push([]);
         for (var j = 0; j < cols; j++) {
-            gridBlocks[i].push(new dataBlock("#06c", '#9cf', 0));
+            if(i == rows) {
+                gridBlocks[i].push(new dataBlock("#06c", '#9cf', 1));
+            } else {
+                gridBlocks[i].push(new dataBlock("#06c", '#9cf', 0));
+            }
         }
     }
 
@@ -96,7 +100,7 @@ function loop() {
         var curTime = Date.now();
         drawGrid();
 
-        if (curTime - lastTime >= 600) {
+        if (curTime - lastTime >= 500) { //600
             translateY(curBlock, 1);
             judge();
             lastTime = curTime;
@@ -118,8 +122,9 @@ function generate(){
 
 //触底判断
 function judge(){
-    if(curBlock.y > rows - curBlock.curArr.length){ //注意 当此判断条件成立时 访问数组index不可用curBlock.y 会超出索引值
-        var typeArr = curBlock.curArr;
+    var typeArr = curBlock.curArr;
+/*    if(curBlock.y > rows - curBlock.curArr.length){ //注意 当此判断条件成立时 访问数组index不可用curBlock.y 会超出索引值
+
 
         for(let i=0; i<typeArr.length; i++) {
             for(let j=0; j<typeArr[i].length; j++){
@@ -129,5 +134,44 @@ function judge(){
         }
 
         curBlock = generate();
+    }*/
+
+    if(curBlock.y>=0) {
+        var loop = true;
+
+        for (let i = typeArr.length - 1; i >=0 ; i--) {
+            if(loop == false) break;
+            for (let j = 0; j < typeArr[i].length; j++) {
+                if (typeArr[i][j] == 0) continue;
+                console.log(curBlock.y + i);
+                console.log('value:',gridBlocks[curBlock.y + i+1][curBlock.x + j].value);
+                if (gridBlocks[curBlock.y + i + 1][curBlock.x + j].value == 1) {
+                    //gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1); //这里应该是循环
+
+                    for(let i=0; i<typeArr.length; i++) {
+                        for(let j=0; j<typeArr[i].length; j++){
+                            if (typeArr[i][j] == 0) continue;
+                            gridBlocks[curBlock.y + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+                        }
+                    }
+
+                    curBlock = generate();
+                    loop = false;
+                    break;
+                }
+
+            }
+        }
+    }
+}
+
+//只是碰底绘制
+function saveData(){
+    var typeArr = curBlock.curArr;
+    for(let i=0; i<typeArr.length; i++) {
+        for(let j=0; j<typeArr[i].length; j++){
+            if (typeArr[i][j] == 0) continue;
+            gridBlocks[rows - typeArr.length + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+        }
     }
 }
