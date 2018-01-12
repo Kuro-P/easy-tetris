@@ -5,6 +5,8 @@ var leftBtn = document.getElementById("left"),
 var dropBtn = document.getElementById('drop'),
     rotateBtn = document.getElementById('rotate');
 
+var restartBtn = document.getElementById('restart');
+
 leftBtn.addEventListener('click', function () {
     translateX(curBlock, -1);
 }, false);
@@ -18,9 +20,52 @@ downBtn.addEventListener('click', function () {
 }, false);
 
 dropBtn.addEventListener('click', function () {
-    translateY(curBlock, rows - curBlock.curArr.length - curBlock.y);
+
+    for(let i=0; i<rows - curBlock.curArr.length; i++) {
+        if(judgeY_loop == false){
+            judgeY_loop = true;
+            break;
+        }
+        translateY(curBlock, 1);
+    }
+
 }, false);
 
 rotateBtn.addEventListener('click', function () {
     rotate(curBlock);
 }, false);
+
+//增加方向键事件
+window.addEventListener('keydown', function (e) {
+
+    if(e.keyCode == 37) { //left
+        leftBtn.click();
+    }
+
+    if(e.keyCode == 38) { // up
+        return ;
+    }
+
+    if(e.keyCode == 39) { //right
+        rightBtn.click();
+    }
+
+    if(e.keyCode == 40) { //down
+        downBtn.click();
+    }
+
+    if(e.keyCode == 13) { //drop(enter)
+        dropBtn.click();
+    }
+
+    if(e.keyCode == 32) { //rotate(space)
+        rotateBtn.click();
+    }
+});
+
+restartBtn.addEventListener('click', function (e) {
+    var answer = confirm('确定重新开始游戏？');
+    if(answer == true){
+        restart();
+    }
+});

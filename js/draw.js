@@ -5,6 +5,7 @@
 //class block { TypeArr: arr, x: 0, y: -2*blockW, vy: 10px/200ms }
 
 var lastTime = Date.now();
+var timer = null;
 var gridBlocks = [];
 init();
 loop();
@@ -12,7 +13,7 @@ loop();
 
 function init() {
     //ctx.beginPath();
-
+    gridBlocks = [];
     //初始化背景数组
     for (var i = 0; i < rows + 1; i++) {
         gridBlocks.push([]);
@@ -32,6 +33,9 @@ function init() {
     //ctx.closePath();
 }
 
+function restart() {
+    init();
+}
 
 /*function drawBg() {
     ctx.fillStyle = "#06c";
@@ -75,15 +79,19 @@ function drawGrid() {
 
 function translateY(block, val) {
     if (!block || !val) console.error('translateY 参数错误');
-    //if (block.y >= rows - block.curArr.length) return;
-    //block.y = Math.min(block.y + Math.abs(val), rows - block.curArr.length);
-    block.y = block.y + parseInt(val);
+    if(judgeY()){
+        block.y = block.y + parseInt(val);
+    }
+
 }
 
 function translateX(block, val) {
     if (!block || !val) console.error('translateX 参数错误');
 
-    block.x = Math.min(Math.max(block.x + parseInt(val), 0), cols - block.wblocks);
+    if(judgeX()) {
+        block.x = Math.min(Math.max(block.x + parseInt(val), 0), cols - block.wblocks);
+    }
+
 }
 
 //顺时针旋转
@@ -93,16 +101,20 @@ function rotate(block) {
     (block.status == 3)?(block.status = 0):(++block.status);
     block.curArr = block.renderArr[block.status];
     block.wblocks = block.curArr[0].length;
+
+    if(curBlock.x + block.wblocks > cols) {
+        curBlock.x = cols - block.wblocks;
+    }
 }
 
 function loop() {
-    window.requestAnimationFrame(function () {
+    timer = window.requestAnimationFrame(function () {
         var curTime = Date.now();
         drawGrid();
 
         if (curTime - lastTime >= 500) { //600
             translateY(curBlock, 1);
-            judge();
+            //judgeY();
             lastTime = curTime;
         }
 
@@ -120,58 +132,68 @@ function generate(){
 
 }
 
+var judgeY_loop = true;
 //触底判断
-function judge(){
+function judgeY(){
     var typeArr = curBlock.curArr;
-/*    if(curBlock.y > rows - curBlock.curArr.length){ //注意 当此判断条件成立时 访问数组index不可用curBlock.y 会超出索引值
 
-
-        for(let i=0; i<typeArr.length; i++) {
-            for(let j=0; j<typeArr[i].length; j++){
-                if (typeArr[i][j] == 0) continue;
-                gridBlocks[rows - typeArr.length + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
-            }
-        }
-
-        curBlock = generate();
-    }*/
+    var loop = true;
 
     if(curBlock.y>=0) {
-        var loop = true;
 
         for (let i = typeArr.length - 1; i >=0 ; i--) {
             if(loop == false) break;
             for (let j = 0; j < typeArr[i].length; j++) {
                 if (typeArr[i][j] == 0) continue;
-                console.log(curBlock.y + i);
-                console.log('value:',gridBlocks[curBlock.y + i+1][curBlock.x + j].value);
+                //console.log(curBlock.y + i);
+                //console.log('value:',gridBlocks[curBlock.y + i+1][curBlock.x + j].value);
                 if (gridBlocks[curBlock.y + i + 1][curBlock.x + j].value == 1) {
-                    //gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1); //这里应该是循环
 
                     for(let i=0; i<typeArr.length; i++) {
                         for(let j=0; j<typeArr[i].length; j++){
                             if (typeArr[i][j] == 0) continue;
-                            gridBlocks[curBlock.y + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+                            //console.log(curBlock.y + i);
+                            gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
                         }
                     }
 
                     curBlock = generate();
                     loop = false;
+                    judgeY_loop = loop;
                     break;
                 }
 
             }
         }
     }
+
+    return loop;
 }
 
-//只是碰底绘制
-function saveData(){
-    var typeArr = curBlock.curArr;
-    for(let i=0; i<typeArr.length; i++) {
-        for(let j=0; j<typeArr[i].length; j++){
-            if (typeArr[i][j] == 0) continue;
-            gridBlocks[rows - typeArr.length + i][curBlock.x+j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+function judgeX(){
+    var curArr = curBlock.curArr;
+    var canMove = true;
+    //判断左边是否有方块
+    for(let i = curArr.length - 1; i>=0; i--){
+
+        if(!canMove) break;
+
+        for(let j = 0; j<curArr[i].length; j++){
+            if(curArr[i][j] == 0) continue;
+            try{
+                if(gridBlocks[curBlock.y + i][curBlock.x + j -1].value == 1){
+
+                    canMove = false;
+                    break;
+
+                }
+            }catch (err){
+                console.log(err);
+            }
+
         }
     }
+
+    return canMove;
+
 }
