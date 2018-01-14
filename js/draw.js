@@ -184,11 +184,10 @@ function judgeY(){
             for (let j = 0; j < typeArr[i].length; j++) {
                 if (typeArr[i][j] == 0) continue;
                 var row = Math.max(0,curBlock.y + i + 1);
-                console.log(Math.max(0,curBlock.y + i + 1));
+                //console.log(Math.max(0,curBlock.y + i + 1));
                 if (gridBlocks[row][curBlock.x + j].value == 1) {
 
                     //若果有一列方块堆满 游戏结束
-                    //var check = gameoverCheck();
                     if(gameoverCheck()){
                         loop = false;
                         judgeY_loop = loop;
@@ -197,10 +196,13 @@ function judgeY(){
                         break;
                     }
 
+                    //触底写入记录数据
                     for(let i=0; i<typeArr.length; i++) {
                         for(let j=0; j<typeArr[i].length; j++){
                             if (typeArr[i][j] == 0) continue;
-                            gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+                            if(curBlock.y + i >= 0){
+                                gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+                            }
                         }
                     }
 

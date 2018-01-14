@@ -21,8 +21,8 @@ downBtn.addEventListener('click', function () {
 }, false);
 
 dropBtn.addEventListener('click', function () {
-
-    for(let i=0; i<rows - curBlock.curArr.length; i++) {
+    judgeY_loop = true;
+    for(let i=0; i<rows; i++) {
         if(judgeY_loop == false){
             judgeY_loop = true;
             break;
