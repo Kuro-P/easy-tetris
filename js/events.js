@@ -5,7 +5,8 @@ var leftBtn = document.getElementById("left"),
 var dropBtn = document.getElementById('drop'),
     rotateBtn = document.getElementById('rotate');
 
-var restartBtn = document.getElementById('restart');
+var restartBtn = document.getElementById('restart'),
+    pauseBtn = document.getElementById('pause');
 
 leftBtn.addEventListener('click', function () {
     translateX(curBlock, -1);
@@ -33,6 +34,10 @@ dropBtn.addEventListener('click', function () {
 
 rotateBtn.addEventListener('click', function () {
     rotate(curBlock);
+}, false);
+
+pauseBtn.addEventListener('click', function () {
+    pause();
 }, false);
 
 //增加方向键事件

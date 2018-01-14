@@ -7,6 +7,8 @@
 var lastTime = Date.now();
 var timer = null;
 var gridBlocks = [];
+var dead = false;
+
 init();
 loop();
 
@@ -34,9 +36,30 @@ function init() {
 }
 
 function restart() {
+    if(dead) {
+        dead = false;
+        pause();
+    }
     init();
 }
 
+function pause() {
+    var text = document.getElementById('pause').innerHTML;
+    if(text == '暂停'){
+        window.cancelAnimationFrame(timer);
+        document.getElementById('pause').innerHTML = '继续';
+    }else{
+        loop();
+        document.getElementById('pause').innerHTML = '暂停';
+    }
+
+}
+
+function gameover() {
+    console.log('游戏结束');
+    pause();
+
+}
 /*function drawBg() {
     ctx.fillStyle = "#06c";
     ctx.fillRect(0, 0, cvs.width, cvs.height);
@@ -66,7 +89,6 @@ function drawGrid() {
 
     for (var i = 0; i < gridBlocks.length; i++) {
         for (var j = 0; j < gridBlocks[i].length; j++) {
-           // ctx.moveTo(0, 0);
             ctx.fillStyle = gridBlocks[i][j].color;
             ctx.fillRect(j * blockW, i * blockW, blockW, blockW);
             ctx.strokeStyle = gridBlocks[i][j].borderColor;
@@ -88,7 +110,7 @@ function translateY(block, val) {
 function translateX(block, val) {
     if (!block || !val) console.error('translateX 参数错误');
 
-    if(judgeX()) {
+    if(judgeX(val)) {
         block.x = Math.min(Math.max(block.x + parseInt(val), 0), cols - block.wblocks);
     }
 
@@ -97,6 +119,7 @@ function translateX(block, val) {
 //顺时针旋转
 function rotate(block) {
     if (!block) console.error('rotate 参数错误');
+    if (curBlock.y + 1 == cols -1) return;
 
     (block.status == 3)?(block.status = 0):(++block.status);
     block.curArr = block.renderArr[block.status];
@@ -104,6 +127,10 @@ function rotate(block) {
 
     if(curBlock.x + block.wblocks > cols) {
         curBlock.x = cols - block.wblocks;
+    }
+
+    if(curBlock.y + block.curArr.length > rows -1) {
+        curBlock.y = rows - 1 - block.curArr.length;
     }
 }
 
@@ -114,13 +141,16 @@ function loop() {
 
         if (curTime - lastTime >= 500) { //600
             translateY(curBlock, 1);
-            //judgeY();
             lastTime = curTime;
         }
 
         drawBlock(curBlock);
+        if(dead == false){
+            loop();
+        }else{
+            gameover();
+        }
 
-        loop();
     })
 }
 
@@ -133,26 +163,43 @@ function generate(){
 }
 
 var judgeY_loop = true;
+
 //触底判断
 function judgeY(){
     var typeArr = curBlock.curArr;
 
     var loop = true;
+        dead = false;
 
-    if(curBlock.y>=0) {
+/*    dead = gameoverCheck();
+    console.log(dead);
+    //loop = false;
+    if(dead) return false;*/
+
+
+    if(curBlock.y + typeArr.length >= 0) {
 
         for (let i = typeArr.length - 1; i >=0 ; i--) {
-            if(loop == false) break;
+
             for (let j = 0; j < typeArr[i].length; j++) {
                 if (typeArr[i][j] == 0) continue;
-                //console.log(curBlock.y + i);
-                //console.log('value:',gridBlocks[curBlock.y + i+1][curBlock.x + j].value);
-                if (gridBlocks[curBlock.y + i + 1][curBlock.x + j].value == 1) {
+                var row = Math.max(0,curBlock.y + i + 1);
+                console.log(Math.max(0,curBlock.y + i + 1));
+                if (gridBlocks[row][curBlock.x + j].value == 1) {
+
+                    //若果有一列方块堆满 游戏结束
+                    //var check = gameoverCheck();
+                    if(gameoverCheck()){
+                        loop = false;
+                        judgeY_loop = loop;
+                        dead = true;
+                        gameover();
+                        break;
+                    }
 
                     for(let i=0; i<typeArr.length; i++) {
                         for(let j=0; j<typeArr[i].length; j++){
                             if (typeArr[i][j] == 0) continue;
-                            //console.log(curBlock.y + i);
                             gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
                         }
                     }
@@ -164,36 +211,92 @@ function judgeY(){
                 }
 
             }
+            if(loop == false) break;
         }
     }
-
     return loop;
 }
 
-function judgeX(){
+function judgeX(drec){
     var curArr = curBlock.curArr;
     var canMove = true;
+
     //判断左边是否有方块
-    for(let i = curArr.length - 1; i>=0; i--){
+    if(drec == -1){
+        for(let i = curArr.length - 1; i>=0; i--){
 
-        if(!canMove) break;
+            if(!canMove) break;
 
-        for(let j = 0; j<curArr[i].length; j++){
-            if(curArr[i][j] == 0) continue;
-            try{
-                if(gridBlocks[curBlock.y + i][curBlock.x + j -1].value == 1){
+            for(let j = 0; j<curArr[i].length; j++){
+                if(curArr[i][j] == 0) continue;
+                try{
+                    if(gridBlocks[curBlock.y + i][curBlock.x + j -1].value == 1){
 
-                    canMove = false;
-                    break;
+                        canMove = false;
+                        break;
 
+                    }
+                }catch (err){
+                    console.log(err);
                 }
-            }catch (err){
-                console.log(err);
+            }
+        }
+    }
+
+    //判断右边是否有方块
+    if(drec == 1){
+        for(let i = curArr.length - 1; i>=0; i--){
+
+            for(let j = curArr[i].length -1; j>=0; j--){
+                if(curArr[i][j] == 0) continue;
+                try{
+                    if(gridBlocks[curBlock.y + i][curBlock.x + j +1].value == 1){
+
+                        canMove = false;
+                        break;
+
+                    }
+                }catch (err){
+                    console.log(err);
+                }
+
             }
 
         }
     }
 
+
     return canMove;
 
+}
+
+function gameoverCheck() {
+    var curArr = curBlock.curArr;
+    var loop = true;
+    //存储typeblock每列高度
+    var maxH = new Array(curBlock.wblocks);
+    for(let i=0; i<curArr.length; i++){
+        for(let j=0; j<curArr[i].length; j++){
+            if(!maxH[j]) maxH[j] = 0;
+            if(curArr[i][j] == 1){
+                maxH[j] += 1;
+            }
+        }
+    }
+
+    for(let i=0; i<gridBlocks.length; i++){
+        for(let j=0; j<maxH.length; j++){
+            if(gridBlocks[i][curBlock.x + j].value == 1){
+                //console.log("i:"+i+",maxH[j]:"+j);
+                if(i < maxH[j]){
+                    loop = false;
+                    break;
+                }
+
+            }
+        }
+        if(loop == false) break;
+    }
+    //console.log(loop);
+    return !loop;
 }
