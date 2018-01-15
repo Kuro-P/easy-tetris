@@ -37,6 +37,7 @@ rotateBtn.addEventListener('click', function () {
 }, false);
 
 pauseBtn.addEventListener('click', function () {
+    paused = !paused;
     pause();
 }, false);
 
