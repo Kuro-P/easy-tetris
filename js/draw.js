@@ -60,6 +60,7 @@ function gameover() {
     pause();
 
 }
+
 /*function drawBg() {
     ctx.fillStyle = "#06c";
     ctx.fillRect(0, 0, cvs.width, cvs.height);
@@ -120,18 +121,31 @@ function translateX(block, val) {
 function rotate(block) {
     if (!block) console.error('rotate 参数错误');
     if (curBlock.y + 1 == cols -1) return;
+    var blockCache = curBlock;
+
+    // 补丁：当前方块右边若有其他方块 不可以旋转
+    if(!judgeX(1)) {
+        return ;
+    }
 
     (block.status == 3)?(block.status = 0):(++block.status);
     block.curArr = block.renderArr[block.status];
     block.wblocks = block.curArr[0].length;
 
-    if(curBlock.x + block.wblocks > cols) {
-        curBlock.x = cols - block.wblocks;
+    if(curBlock.x + curBlock.wblocks > cols) {
+        curBlock.x = cols - curBlock.wblocks;
     }
 
-    if(curBlock.y + block.curArr.length > rows -1) {
-        curBlock.y = rows - 1 - block.curArr.length;
+    if(curBlock.y + curBlock.curArr.length > rows -1) {
+        curBlock.y = rows - 1 - curBlock.curArr.length;
     }
+
+    //旋转后的方块 如果[左,右]存在方块 则不旋转
+    if(!judgeX(1) || !judgeX(-1)) {
+        curBlock = blockCache;
+    }
+
+
 }
 
 function loop() {
@@ -141,6 +155,7 @@ function loop() {
 
         if (curTime - lastTime >= 500) { //600
             translateY(curBlock, 1);
+            clearRow();
             lastTime = curTime;
         }
 
@@ -171,20 +186,13 @@ function judgeY(){
     var loop = true;
         dead = false;
 
-/*    dead = gameoverCheck();
-    console.log(dead);
-    //loop = false;
-    if(dead) return false;*/
-
-
-    if(curBlock.y + typeArr.length >= 0) {
+    if(curBlock.y + typeArr.length >= 0) { //当方块距离画布格数为0时开始判断
 
         for (let i = typeArr.length - 1; i >=0 ; i--) {
 
             for (let j = 0; j < typeArr[i].length; j++) {
                 if (typeArr[i][j] == 0) continue;
                 var row = Math.max(0,curBlock.y + i + 1);
-                //console.log(Math.max(0,curBlock.y + i + 1));
                 if (gridBlocks[row][curBlock.x + j].value == 1) {
 
                     //若果有一列方块堆满 游戏结束
@@ -196,15 +204,8 @@ function judgeY(){
                         break;
                     }
 
-                    //触底写入记录数据
-                    for(let i=0; i<typeArr.length; i++) {
-                        for(let j=0; j<typeArr[i].length; j++){
-                            if (typeArr[i][j] == 0) continue;
-                            if(curBlock.y + i >= 0){
-                                gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
-                            }
-                        }
-                    }
+                   //触底写入记录数据
+                    saveData();
 
                     curBlock = generate();
                     loop = false;
@@ -239,7 +240,7 @@ function judgeX(drec){
 
                     }
                 }catch (err){
-                    console.log(err);
+                    //console.log(err);
                 }
             }
         }
@@ -259,7 +260,7 @@ function judgeX(drec){
 
                     }
                 }catch (err){
-                    console.log(err);
+                    //console.log(err);
                 }
 
             }
@@ -289,7 +290,7 @@ function gameoverCheck() {
     for(let i=0; i<gridBlocks.length; i++){
         for(let j=0; j<maxH.length; j++){
             if(gridBlocks[i][curBlock.x + j].value == 1){
-                //console.log("i:"+i+",maxH[j]:"+j);
+
                 if(i < maxH[j]){
                     loop = false;
                     break;
@@ -301,4 +302,63 @@ function gameoverCheck() {
     }
     //console.log(loop);
     return !loop;
+}
+
+function saveData() {
+    var typeArr = curBlock.curArr;
+
+    //触底写入记录数据
+    for(let i=0; i<typeArr.length; i++) {
+        for(let j=0; j<typeArr[i].length; j++){
+            if (typeArr[i][j] == 0) continue;
+            if(curBlock.y + i >= 0){ //防止为负超出数组索引
+                gridBlocks[curBlock.y + i][curBlock.x + j] = new dataBlock(curBlock.color, curBlock.borderColor, 1);
+            }
+        }
+    }
+
+}
+
+function clearRow() {
+    var rowBlocks = 0;
+    var needClearRows = [];
+
+    for(let i=0; i<rows; i++){
+        rowBlocks = 0;
+        for(let j=0; j<cols; j++){
+
+            if(gridBlocks[i][j].value == 0) {
+                break;
+            }else{
+                rowBlocks++;
+            }
+
+            if(rowBlocks == cols){
+                needClearRows.push(i);
+                rowBlocks = 0;
+            }
+        }
+    }
+    //console.log(needClearRows);
+    //清空满格行
+    for(rowIdx of needClearRows){
+        refresh(rowIdx);
+    }
+
+}
+
+//刷新存储数据
+function refresh(freshIdx){
+
+    for(let i=freshIdx; i>0; i--){
+        for(let j=0; j<cols; j++){
+            if(i == 0){
+                gridBlocks[i][j] = new dataBlock();
+                break;
+            }else{
+                gridBlocks[i][j] = gridBlocks[i-1][j];
+            }
+
+        }
+    }
 }
