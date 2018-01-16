@@ -7,7 +7,8 @@
 var lastTime = Date.now();
 var timer = null;
 var gridBlocks = [];
-var dead = false;
+var dead = false,
+    paused = false;
 
 init();
 loop();
@@ -36,16 +37,15 @@ function init() {
 }
 
 function restart() {
-    if(dead) {
-        dead = false;
-        pause();
-    }
+    dead = false;
+    paused = false;
+    pause();
     init();
 }
 
 function pause() {
-    var text = document.getElementById('pause').innerHTML;
-    if(text == '暂停'){
+
+    if(paused){
         window.cancelAnimationFrame(timer);
         document.getElementById('pause').innerHTML = '继续';
     }else{
@@ -58,13 +58,9 @@ function pause() {
 function gameover() {
     console.log('游戏结束');
     pause();
+    paused = true;
 
 }
-
-/*function drawBg() {
-    ctx.fillStyle = "#06c";
-    ctx.fillRect(0, 0, cvs.width, cvs.height);
-}*/
 
 //画typeBlock
 function drawBlock(block) {
