@@ -9,6 +9,7 @@ var timer = null;
 var gridBlocks = [];
 var dead = false,
     paused = false;
+var score = 0; //下降得1分，消除一行得20分
 
 init();
 loop();
@@ -17,6 +18,8 @@ loop();
 function init() {
     //ctx.beginPath();
     gridBlocks = [];
+    score = 0;
+    addScore(0);
     //初始化背景数组
     for (var i = 0; i < rows + 1; i++) {
         gridBlocks.push([]);
@@ -202,6 +205,7 @@ function judgeY(){
 
                    //触底写入记录数据
                     saveData();
+                    addScore(1);
 
                     curBlock = generate();
                     loop = false;
@@ -339,6 +343,7 @@ function clearRow() {
     //清空满格行
     for(rowIdx of needClearRows){
         refresh(rowIdx);
+        addScore(20);
     }
 
 }
@@ -357,4 +362,10 @@ function refresh(freshIdx){
 
         }
     }
+}
+
+//更改成绩
+function addScore(s) {
+    score += s;
+    document.getElementById("score").getElementsByTagName("span")[0].innerHTML = score;
 }
