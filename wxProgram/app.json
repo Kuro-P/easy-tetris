@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#06c",
+    "navigationBarTitleText": "俄罗斯方块简易版",
+    "navigationBarTextStyle": "#fff"
+  }
+}

@@ -1,0 +1,6 @@
+<!--index.wxml-->
+<view class="container">
+  <view></view>
+  <text class="title">Tetris</text>
+  <button class="startBtn">开始游戏</button>
+</view>
