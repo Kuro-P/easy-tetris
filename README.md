@@ -43,7 +43,7 @@ Tetris-JS简易版俄罗斯方块
 * __界面优化__
     当前文件中预览状态如下：<br/>
     <img src="/preview/basic.jpg" alt="基本状态" width="300"><br/><br/>
-    预览地址：
+    预览地址：https://kuro-p.github.io/Easy-Tetris/tetris<br/>
     后来在<del>初学微信小程序</del>（交作业）时，顺便优化了下样式：<br/>
     <img src="/preview/inWX.gif" alt="微信小程序" width="300"><br/>
  
