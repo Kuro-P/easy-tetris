@@ -43,7 +43,7 @@
 * 界面优化
  
 ## 预览
-预览地址：https://kuro-p.github.io/Easy-Tetris/tetris
+预览地址：https://kuro-p.github.io/easy-tetris/index.html
 
 <img src="/preview/inWX.gif" alt="首页" width="300"><br/>
 
